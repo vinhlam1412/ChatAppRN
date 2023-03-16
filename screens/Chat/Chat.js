@@ -19,6 +19,7 @@ import {
     get,
     onValue,
 } from '../../firesbase/firebase'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Chat(props) {
 
@@ -33,19 +34,24 @@ function Chat(props) {
     const { navigation, route } = props
     const { navigate, goBack } = navigation
     useEffect(() => {
-        onValue(firebaseDatabaseRef(firebaseDatabase, 'users'), (snapshot) => {
+        onValue(firebaseDatabaseRef(firebaseDatabase, 'users'), async (snapshot) => {
             if (snapshot.exists()) {
-                let value = snapshot.val()
-                setUsers(Object.values(value).map(eachObject => {
-                    return {
-                        //default profile url
-                        url: 'https://randomuser.me/api/portraits/men/22.jpg',
-                        name: eachObject.email,
-                        email: eachObject.email,
-                        accessTokentoken: eachObject.accessToken,
-                        numberofUnredMessages: 0,
-                    }
-                }))
+                let snapshotObject = snapshot.val()
+                let stringUser = await AsyncStorage.getItem('user')
+                let myuserId = JSON.parse(stringUser).userId
+                setUsers(Object.keys(snapshotObject)
+                    .filter(item => item != myuserId).map(eachKey => {
+                        let eachObject = snapshotObject[eachKey]
+                        return {
+                            //default profile url
+                            url: 'https://randomuser.me/api/portraits/men/22.jpg',
+                            name: eachObject.email,
+                            email: eachObject.email,
+                            accessTokentoken: eachObject.accessToken,
+                            numberofUnredMessages: 0,
+                            userId: eachKey,
+                        }
+                    }))
             } else {
                 console.log('No data available')
             }
@@ -59,7 +65,7 @@ function Chat(props) {
             leftIconName={"arrowleft"}
             rightIconName={"search1"}
             onPressLeftIcon={() => {
-                alert("left icon")
+                goBack()
             }}
             onPressRightIcon={() => {
                 alert("right icon")

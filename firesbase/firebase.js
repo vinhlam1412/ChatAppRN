@@ -3,7 +3,9 @@ import {
     getAuth,
     onAuthStateChanged,
     createUserWithEmailAndPassword,
-    sendEmailVerification
+    sendEmailVerification,
+    signInWithEmailAndPassword
+
 } from 'firebase/auth'
 
 //ref = reference tp a collection
@@ -14,6 +16,7 @@ import {
     child,
     get,
     onValue,
+
 } from 'firebase/database'
 
 // Config Firebase
@@ -42,4 +45,5 @@ export {
     child,
     get,
     onValue, //reload when online DB changed
+    signInWithEmailAndPassword,
 }

@@ -13,6 +13,7 @@ import { images, icons, Icons, colors, fontSizes } from '../constants';
 import { UIButton } from '../components'
 import icon from '../constants/icons';
 import Icon from 'react-native-vector-icons/AntDesign';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Welcome(props) {
     //state => when a state is changed => UI is reload
@@ -36,19 +37,22 @@ function Welcome(props) {
     const { navigation, route } = props
     const { navigate, goBack } = navigation
     useEffect(() => {
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                //signed in
-                const userId = user.uid
+        onAuthStateChanged(auth, (responseUser) => {
+            if (responseUser) {
                 //save data to Firebase
+                let user = {
+                    userId: responseUser.uid,
+                    email: responseUser.email,
+                    emailVerified: responseUser.emailVerified,
+                    accessToken: responseUser.accessToken
+                }
                 firebaseSet(firebaseDatabaseRef(
                     firebaseDatabase,
-                    `users/${userId}`
-                ), {
-                    email: user.email,
-                    emailVerified: user.emailVerified,
-                    accessToken: user.accessToken
-                })
+                    `users/${responseUser.uid}`
+                ), user)
+
+                //save to local storage
+                AsyncStorage.setItem("user", JSON.stringify(user))
                 navigate("UITab")
             }
         })
