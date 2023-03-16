@@ -11,6 +11,7 @@ function ChatItem(props) {
         url,
         message,
         numberofUnredMessages,
+        userId,
     } = props.user
     const { onPress } = props
     return (<TouchableOpacity

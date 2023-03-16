@@ -12,6 +12,16 @@ import { UIButton } from '../components'
 import icon from '../constants/icons';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { isValidEmail, isValidPassword } from '../ulities/Validations';
+import {
+    onAuthStateChanged,
+    firebaseDatabaseRef,
+    firebaseSet,
+    firebaseDatabase,
+    auth,
+    createUserWithEmailAndPassword,
+    sendEmailVerification,
+    signInWithEmailAndPassword,
+} from '../firesbase/firebase'
 function Login(props) {
     const [keyboardIsShown, setKeyboardIsShown] = useState(false)
 
@@ -140,8 +150,13 @@ function Login(props) {
             <TouchableOpacity
                 disabled={isValidationOK() == true}
                 onPress={() => {
-                    navigate("UITab")
-                    //alert(`Email= ${email}, password= ${password}`);
+                    signInWithEmailAndPassword(auth, email, password)
+                        .then((userCreadential) => {
+                            const user = userCreadential.user
+                            navigate("UITab")
+                        }).catch((error) => {
+                            alert(`Cannot signin, error:${error.message}`)
+                        })
                 }} style={{
                     backgroundColor: isValidationOK() == true ? colors.primary : colors.inactive,
                     justifyContent: 'center',

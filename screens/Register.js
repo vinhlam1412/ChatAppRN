@@ -207,34 +207,10 @@ function Register(props) {
                             sendEmailVerification(user).then(() => {
                                 console.log('Email verification sent')
                             })
-                            //save data to Firebase
-                            firebaseSet(firebaseDatabaseRef(
-                                firebaseDatabase,
-                                `users/${user.uid}`
-                            ), {
-                                email: user.email,
-                                emailVerified: user.emailVerified,
-                                accessToken: user.accessToken
-                            })
-
                             navigate("UITab")
                         }).catch((error) => {
                             alert(`Cannot signin, error:${error.message}`)
                         })
-                    //alert(`Email = ${email}, password = ${password}`)
-                    // createUserWithEmailAndPassword(auth, email, password)
-                    //     .then((userCredential) => {
-                    //         const user = userCredential.user
-                    //         debugger
-                    //         sendEmailVerification(user).then(() => {
-                    //             console.log('Email verification sent')
-                    //         })
-                    //         navigate('UITab')
-
-                    //     }).catch((error) => {
-                    //         debugger
-                    //         alert(`Cannot signin, error: ${error.message}`)
-                    //     })
                 }}
                 style={{
                     backgroundColor: isValidationOK() == true
