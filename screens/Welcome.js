@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Alert, Image, ImageBackground, Text, TouchableOpacity, View } from 'react-native';
-import { sum2Number } from '../ulities/Caculator';
+import {
+    auth,
+    onAuthStateChanged,
+    firebaseDatabaseRef,
+    firebaseSet,
+    firebaseDatabase
+} from '../firesbase/firebase'
 
 
 import { images, icons, Icons, colors, fontSizes } from '../constants';
@@ -26,6 +32,28 @@ function Welcome(props) {
             isSelected: false
         }
     ])
+
+    const { navigation, route } = props
+    const { navigate, goBack } = navigation
+    useEffect(() => {
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                //signed in
+                const userId = user.uid
+                //save data to Firebase
+                firebaseSet(firebaseDatabaseRef(
+                    firebaseDatabase,
+                    `users/${userId}`
+                ), {
+                    email: user.email,
+                    emailVerified: user.emailVerified,
+                    accessToken: user.accessToken
+                })
+                navigate("UITab")
+            }
+        })
+    })
+
     return <View style={{
         backgroundColor: 'white',
         flex: 100
@@ -111,7 +139,11 @@ function Welcome(props) {
             <View style={{
                 flex: 20,
             }}>
-                <UIButton title={'login'.toUpperCase()}></UIButton>
+                <UIButton
+                    onPress={() => {
+                        navigate("Login")
+                    }}
+                    title={'login'.toUpperCase()}></UIButton>
                 <Text style={{
                     marginBottom: 7,
                     color: 'white',
@@ -120,7 +152,7 @@ function Welcome(props) {
                 }}>Want to register new Account ?</Text>
                 <TouchableOpacity
                     onPress={() => {
-                        alert('Register New Account');
+                        navigate("Register")
                     }}
                     style={{
                         padding: 5
